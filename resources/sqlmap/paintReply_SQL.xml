@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE  mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="paintboard_reply">
+	<!-- namespace에는 테이블명추가 -->
+	<!-- 게시물 리스트 -->
+	<select id="replyList" parameterType="int" resultType="com.portfolio.jdh.domain.paintReplyVO">
+	<![CDATA[ 
+		select paintRno, paintNo, writer, content, regDate 
+		from paintboard_reply 
+		where paintNo = #{paintNo} 
+	]]>
+	</select>
+	
+	<!--  댓글 작성  -->
+	<insert id="replyWrite" parameterType="com.portfolio.jdh.domain.paintReplyVO">
+	<![CDATA[ 
+	insert into paintboard_reply(paintNo, writer, content) 
+	value(#{paintNo}, #{writer}, #{content}) 
+	]]>
+	</insert>
+	
+	<!--  댓글 수정  -->
+	<update id="replyModify" parameterType="com.portfolio.jdh.domain.paintReplyVO">
+	<![CDATA[ 
+	update paintboard_reply set writer = #{writer}, content = #{content} 
+	where paintRno = #{paintRno} and paintNo = #{paintNo} 
+	]]>
+	</update>
+	
+	<!--  댓글 삭제  -->
+	<delete id="replyDelete" parameterType="com.portfolio.jdh.domain.paintReplyVO">
+	<![CDATA[ 
+	delete from paintboard_reply 
+	where paintRno = #{paintRno} 
+	]]>
+	</delete>
+	
+	<!--  단일댓글조회  -->
+	<select id="replySelect" parameterType="com.portfolio.jdh.domain.paintReplyVO" resultType="com.portfolio.jdh.domain.paintReplyVO">
+	<![CDATA[ 
+	select paintRno, paintNo, writer, content, regDate 
+	from paintboard_reply 
+	where paintNo=#{paintNo} and paintRno= #{paintRno} 
+	]]>
+	</select>
+</mapper>

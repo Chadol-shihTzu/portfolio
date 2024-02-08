@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE  mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="member">
+	<!-- namespace에는 테이블명추가 -->
+	<!-- 회원가입 -->
+	<insert id="join" parameterType="hashMap" useGeneratedKeys="true" keyProperty="userId">
+		<!-- keproperty에는 primary key 설정한 것 넣어주기 -->
+			<![CDATA[
+			insert into member
+			(userId, userPassword,userRePassword,userName,userBirth,userGender,userAddr1,userAddr2,userAddr3,userEmail,userPhone,userPoint, verify)
+			values
+			(#{userId}, #{userPassword}, #{userRePassword}, #{userName}, #{userBirth}, #{userGender}, #{userAddr1}, #{userAddr2}, #{userAddr3}, #{userEmail}, #{userPhone}, 0, 0) 
+		]]>
+	</insert>
+	
+	<!-- 로그인 -->
+	<select id="login" parameterType="hashMap" resultType="com.portfolio.jdh.domain.MemberVO">
+		<![CDATA[
+			select
+			userId, userPassword, userRePassword, userName, userBirth, userGender, userAddr1, userAddr2, userAddr3, userEmail, userPhone, userPoint, regDate, verify
+			from
+			member
+			where userId = #{userId}
+		]]>
+	</select>
+	
+	<!-- 회원정보 수정 -->
+	<update id="modify" parameterType="hashMap">
+		<![CDATA[
+			update member set 
+			userPassword = #{userPassword},
+			userRePassword = #{userRePassword},
+			userName = #{userName}, 
+			userBirth = #{userBirth},
+			userAddr1 = #{userAddr1},
+			userAddr2 = #{userAddr2},
+			userAddr3 = #{userAddr3}, 
+			userEmail = #{userEmail}, 
+			userPhone = #{userPhone}
+			where userId = #{userId}
+		]]>
+	</update>
+	
+	<!-- 계정 탈퇴 -->
+	<delete id="withdrawal">
+		<![CDATA[
+			delete from member where userId = #{userId} and userPassword = #{userPassword}
+		]]>
+	</delete>
+	
+	
+	<!-- 아이디 중복검사 -->
+	<select id="idCheck" resultType="com.portfolio.jdh.domain.MemberVO">
+	   <![CDATA[
+	   	select userId from member
+	       	where userId = #{userId}
+	   ]]>
+	</select>
+	
+	<!-- 회원 삭제 admin -->
+	<delete id="delete">
+		<![CDATA[
+			delete from member where userId = #{userId}
+		]]>
+	</delete>
+	
+	<!-- 회원 목록 admin-->
+	<select id="select_list"  parameterType="hashMap" resultType="com.portfolio.jdh.domain.MemberVO">
+		<![CDATA[
+		select 
+		userNum,userId,userPassword,userRePassword,userName,userGender,userBirth,userAddr1,userAddr2,userAddr3,userEmail,userPhone,userPoint,regDate,verify
+		from 
+		member 	
+		where 1 = 1	
+		]]>
+		<if test="keyword != null and keyword != ''">
+		and (Id like CONCAT('%',#{keyword},'%') or Name like CONCAT('%',#{keyword},'%') or Mail like CONCAT('%',#{keyword},'%') or Addr1 like CONCAT('%',#{keyword},'%') or Addr2 like CONCAT('%',#{keyword},'%') or Addr3 like CONCAT('%',#{keyword},'%'))
+		</if>
+		order by userNum desc
+	</select>
+	
+	<!-- 회원정보 수정 admin -->
+	<update id="adminmodify" parameterType="hashMap">
+		<![CDATA[
+			update member set 
+			userPassword = #{userPassword},
+			userRePassword = #{userRePassword},
+			userName = #{userName}, 
+			userBirth = #{userBirth},
+			userAddr1 = #{userAddr1},
+			userAddr2 = #{userAddr2},
+			userAddr3 = #{userAddr3}, 
+			userEmail = #{userEmail}, 
+			userPhone = #{userPhone},
+			userPoint = #{userPoint},
+			verify = #{verify}
+			where userId = #{userId}
+		]]>
+	</update>
+	
+	<!-- 회원 보기 admin-->
+	<select id="view" resultType="com.portfolio.jdh.domain.MemberVO">
+		<![CDATA[
+			select
+			userId,userPassword,userRePassword,userName,userGender,userBirth,userAddr1,userAddr2,userAddr3,userEmail,userPhone,userPoint,regDate,verify
+			from
+			member
+			where userId = #{userId}
+		]]>
+	</select>
+	
+	<!-- ★페이징 -->
+	<!-- 1. 게시물 총 갯수 -->
+	<select id="count" resultType="int">
+		<![CDATA[
+			select count(userNum) from member
+		]]>
+	</select>
+	
+	<!-- 2. 게시물 목록 + 페이징 -->
+	<select id="listPage" parameterType="hashMap" resultType="com.portfolio.jdh.domain.MemberVO">
+		select userNum,userId,userPassword,userRePassword,userName,userGender,userBirth,userAddr1,userAddr2,userAddr3,userEmail,userPhone,userPoint,regDate,verify
+		from member
+		order by userNum desc
+		limit #{displayPost}, #{postNum}
+	</select>
+	
+	<!-- 3. 게시물 목록 + 페이징 + 검색 id name gender birth useraddr1 useraddr2 useradd3 useremil userphone--> 
+	<select id="listPageSearch" parameterType="hashMap" resultType="com.portfolio.jdh.domain.MemberVO">
+		select userNum,userId,userPassword,userRePassword,userName,userGender,userBirth,userAddr1,userAddr2,userAddr3,userEmail,userPhone,userPoint,regDate,verify
+		from member
+		<if test='searchType.equals("id")'>
+		where userId LIKE concat('%', #{keyword}, '%')
+		</if>
+		<if test='searchType.equals("name")'>
+		where userName LIKE concat('%', #{keyword}, '%')
+		</if>
+		<if test='searchType.equals("gender")'>
+		where userGender LIKE concat('%', #{keyword}, '%')
+		</if>
+		<if test='searchType.equals("birth")'>
+		where userBirth LIKE concat('%', #{keyword}, '%')
+		</if>
+		<if test='searchType.equals("addr1")'>
+		where userAddr1 LIKE concat('%', #{keyword}, '%')
+		</if>
+		<if test='searchType.equals("addr2")'>
+		where userAddr2 LIKE concat('%', #{keyword}, '%')
+		</if>
+		<if test='searchType.equals("addr3")'>
+		where userAddr3 LIKE concat('%', #{keyword}, '%')
+		</if>
+		<if test='searchType.equals("email")'>
+		where userEmail LIKE concat('%', #{keyword}, '%')
+		</if>
+		<if test='searchType.equals("phone")'>
+		where userPhone LIKE concat('%', #{keyword}, '%')
+		</if>
+		order by userNum desc
+		limit #{displayPost}, #{postNum}
+	</select>
+	
+	<!-- 게시물 총 갯수 + 검색 적용 -->
+	<select id="searchCount" parameterType="hashMap" resultType="int">
+	 select count(userNum) from member 
+	  
+	 <if test='searchType.equals("id")'>
+		where userId LIKE concat('%', #{keyword}, '%')
+		</if>
+		<if test='searchType.equals("name")'>
+		where userName LIKE concat('%', #{keyword}, '%')
+		</if>
+		<if test='searchType.equals("gender")'>
+		where userGender LIKE concat('%', #{keyword}, '%')
+		</if>
+		<if test='searchType.equals("birth")'>
+		where userBirth LIKE concat('%', #{keyword}, '%')
+		</if>
+		<if test='searchType.equals("addr1")'>
+		where userAddr1 LIKE concat('%', #{keyword}, '%')
+		</if>
+		<if test='searchType.equals("addr2")'>
+		where userAddr2 LIKE concat('%', #{keyword}, '%')
+		</if>
+		<if test='searchType.equals("addr3")'>
+		where userAddr3 LIKE concat('%', #{keyword}, '%')
+		</if>
+		<if test='searchType.equals("email")'>
+		where userEmail LIKE concat('%', #{keyword}, '%')
+		</if>
+		<if test='searchType.equals("phone")'>
+		where userPhone LIKE concat('%', #{keyword}, '%')
+		</if>
+	 
+	</select>
+</mapper>

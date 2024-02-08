@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE  mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="hotdealboard">
+	<insert id="write">
+		insert into hotdealboard (hotTitle,hotCategory, hotUrl, hotShop, hotPrice, hotDelivery, hotContent, hotImg, hotWriter)
+		values (#{hotTitle},#{hotCategory}, #{hotUrl}, #{hotShop}, #{hotPrice},#{hotDelivery}, #{hotContent}, #{hotImg}, #{hotWriter})
+	</insert>
+	
+	<!-- namespace에는 테이블명추가 -->
+	<!-- 게시물 리스트 -->
+	<select id="list" resultType="com.portfolio.jdh.domain.hotdealBoardVO">
+		<![CDATA[
+			select 
+			hotNo, hotUrl,hotCategory, hotShop, hotPrice, hotTitle, hotImg, hotContent, hotDelivery, hotWriter, hotregDate, hotViewCnt
+			from
+			hotdealboard
+			order by hotNo desc 
+		]]>
+	</select>
+	
+	<!-- 게시물 보기 -->
+	<select id="view" resultType="com.portfolio.jdh.domain.hotdealBoardVO">
+		<![CDATA[
+			select
+			hotNo, hotTitle,hotCategory, hotUrl, hotShop, hotPrice, hotImg, hotDelivery, hotContent, hotWriter, hotregDate, hotViewCnt
+			from
+			hotdealboard
+			where hotNo = #{hotNo}
+		]]>
+	</select>
+	
+	<!-- 게시물 수정 -->
+	<update id="modify" parameterType="com.portfolio.jdh.domain.hotdealBoardVO">
+		<![CDATA[
+			update hotdealboard set
+			hotTitle = #{hotTitle},
+			hotCategory = #{hotCategory},
+			hotUrl = #{hotUrl}, 
+			hotShop = #{hotShop}, 
+			hotPrice = #{hotPrice},
+			hotImg = #{hotImg},
+			hotDelivery = #{hotDelivery},
+			hotWriter = #{hotWriter},
+			hotContent = #{hotContent},
+			hotDelivery = #{hotDelivery}
+			where hotNo = #{hotNo}
+		]]>		
+	</update>
+	
+	<!-- 게시물 삭제 -->
+	<delete id="delete" parameterType="int">
+		<![CDATA[
+			delete from hotdealboard where hotNo = #{hotNo}
+		]]>
+	</delete>
+	
+	<!-- ★페이징 -->
+	<!-- 1. 게시물 총 갯수 -->
+	<select id="count" resultType="int">
+		<![CDATA[
+			select count(hotNo) from hotdealboard
+		]]>
+	</select>
+	
+	<!-- 2. 게시물 목록 + 페이징 -->
+	<select id="listPage" parameterType="hashMap" resultType="com.portfolio.jdh.domain.hotdealBoardVO">
+		<![CDATA[
+		select hotNo, hotTitle, hotImg, hotWriter, hotregDate, hotViewCnt
+		from hotdealboard
+		order by hotNo desc
+		limit #{displayPost}, #{postNum}
+		]]>
+	</select>
+		
+	<!-- 3. 게시물 목록 + 페이징 + 검색 -->
+	<select id="listPageSearch" parameterType="hashMap" resultType="com.portfolio.jdh.domain.hotdealBoardVO">
+		<![CDATA[
+		select hotNo, hotTitle,hotCategory, hotUrl, hotImg, hotPrice, hotDelivery, hotShop, hotWriter, hotregDate, hotViewCnt
+		from hotdealboard
+		]]>
+		<if test='searchType.equals("title")'>
+	  WHERE hotTitle LIKE concat('%', #{keyword}, '%')
+	 </if>
+	 
+	 <if test='searchType.equals("content")'>
+	  WHERE hotContent LIKE concat('%', #{keyword}, '%')
+	 </if>
+	 
+	 <if test='searchType.equals("shop")'>
+	  WHERE hotShop LIKE concat('%', #{keyword}, '%') 
+	 </if>
+	 
+	 <if test='searchType.equals("price")'>
+	  WHERE hotPrice LIKE concat('%', #{keyword}, '%') 
+	 </if>
+	 
+	 <if test='searchType.equals("delivery")'>
+	  WHERE hotDelivery LIKE concat('%', #{keyword}, '%') 
+	 </if>
+	 
+	 <if test='searchType.equals("writer")'>
+	  WHERE hotWriter LIKE concat('%', #{keyword}, '%')
+	 </if>
+		order by hotNo desc
+		limit #{displayPost}, #{postNum}
+	</select>
+	
+	<!-- 게시물 총 갯수 + 검색 적용 -->
+	<select id="searchCount" parameterType="hashMap" resultType="int">
+	 select count(hotNo) from hotdealboard  
+	  
+	 <if test='searchType.equals("title")'>
+	  WHERE hotTitle LIKE concat('%', #{keyword}, '%')
+	 </if>
+	 
+	 <if test='searchType.equals("content")'>
+	  WHERE hotContent LIKE concat('%', #{keyword}, '%')
+	 </if>
+	 
+	 <if test='searchType.equals("shop")'>
+	  WHERE hotShop LIKE concat('%', #{keyword}, '%') 
+	 </if>
+	 
+	 <if test='searchType.equals("price")'>
+	  WHERE hotPrice LIKE concat('%', #{keyword}, '%') 
+	 </if>
+	 
+	 <if test='searchType.equals("delivery")'>
+	  WHERE hotDelivery LIKE concat('%', #{keyword}, '%') 
+	 </if>
+	 
+	 <if test='searchType.equals("writer")'>
+	  WHERE hotWriter LIKE concat('%', #{keyword}, '%')
+	 </if>
+	 
+	</select>
+	
+	<!-- 조회수 증가 -->
+	<update id="boardHit" parameterType="int">
+		<![CDATA[
+			update hotdealboard set
+			hotViewCnt = hotViewCnt + 1
+			where hotNo = #{hotNo}
+		]]>
+	</update>
+	
+
+</mapper>

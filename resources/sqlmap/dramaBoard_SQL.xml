@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE  mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dramaboard">
+	<!-- namespace에는 테이블명추가 -->
+	<!-- 게시물 리스트 -->
+	<select id="list" resultType="com.portfolio.jdh.domain.dramaBoardVO">
+		<![CDATA[
+			select 
+			*
+			from
+			dramaboard
+			order by dramaNo desc 
+		]]>
+	</select>
+	
+	<!-- 게시물 작성 -->
+	<insert id="write" parameterType="hashMap" useGeneratedKeys="true" keyProperty="dramaNo">
+		<![CDATA[
+			insert into dramaboard
+			(dramaTitle, dramaShortTitle, dramaContent, dramaWriter)
+			values
+			(#{dramaTitle}, #{dramaShortTitle}, #{dramaContent}, #{dramaWriter})
+		]]>
+	</insert>
+	
+	<!-- 게시물 보기 -->
+	<select id="view" resultType="com.portfolio.jdh.domain.dramaBoardVO">
+		<![CDATA[
+			select
+			dramaNo, dramaTitle, dramaShortTitle, dramaContent, dramaWriter, dramaregDate, dramaViewCnt
+			from
+			dramaboard
+			where dramaNo = #{dramaNo}
+		]]>
+	</select>
+	
+	<!-- 게시물 수정 -->
+	<update id="modify" parameterType="com.portfolio.jdh.domain.dramaBoardVO">
+		<![CDATA[
+			update dramaboard set
+			dramaTitle = #{dramaTitle},
+			dramaShortTitle = #{dramaShortTitle},
+			dramaWriter = #{dramaWriter},
+			dramaContent = #{dramaContent}
+			where dramaNo = #{dramaNo}
+		]]>		
+	</update>
+	
+	<!-- 게시물 삭제 -->
+	<delete id="delete" parameterType="int">
+		<![CDATA[
+			delete from dramaboard where dramaNo = #{dramaNo}
+		]]>
+	</delete>
+	
+	<!-- ★페이징 -->
+	<!-- 1. 게시물 총 갯수 -->
+	<select id="count" resultType="int">
+		<![CDATA[
+			select count(dramaNo) from dramaboard
+		]]>
+	</select>
+	
+	<!-- 2. 게시물 목록 + 페이징 -->
+	<select id="listPage" parameterType="hashMap" resultType="com.portfolio.jdh.domain.dramaBoardVO">
+		select dramaNo, dramaTitle, dramaWriter, dramaregDate, dramaViewCnt
+		from dramaboard
+		order by dramaNo desc
+		limit #{displayPost}, #{postNum}
+	</select>
+	
+	<!-- 3. 게시물 목록 + 페이징 + 검색 -->
+	<select id="listPageSearch" parameterType="hashMap" resultType="com.portfolio.jdh.domain.dramaBoardVO">
+		select dramaNo, dramaTitle, dramaWriter, dramaregDate, dramaViewCnt
+		from dramaboard
+		<if test='searchType.equals("title")'>
+			where dramaTitle LIKE concat('%', #{keyword}, '%')
+		</if>
+		<if test='searchType.equals("content")'>
+		where dramaContent LIKE concat('%', #{keyword}, '%')
+		</if>
+		<if test='searchType.equals("title_content")'>
+		where dramaTitle LIKE concat('%', #{keyword}, '%') or dramaContent LIKE concat('%', #{keyword}, '%')
+		</if>
+		<if test='searchType.equals("writer")'>
+		where dramaWriter LIKE concat('%', #{keyword}, '%')
+		</if>
+		order by dramaNo desc
+		limit #{displayPost}, #{postNum}
+	</select>
+	
+	<!-- 게시물 총 갯수 + 검색 적용 -->
+	<select id="searchCount" parameterType="hashMap" resultType="int">
+	 select count(dramaNo) from dramaboard  
+	  
+	 <if test='searchType.equals("title")'>
+	  WHERE dramaTitle LIKE concat('%', #{keyword}, '%')
+	 </if>
+	 
+	 <if test='searchType.equals("content")'>
+	  WHERE dramaContent LIKE concat('%', #{keyword}, '%')
+	 </if>
+	 
+	 <if test='searchType.equals("title_content")'>
+	  WHERE dramaTitle LIKE concat('%', #{keyword}, '%') 
+	   or dramaContent LIKE concat('%', #{keyword}, '%')
+	 </if>
+	 
+	 <if test='searchType.equals("writer")'>
+	  WHERE dramaWriter LIKE concat('%', #{keyword}, '%')
+	 </if>
+	 
+	</select>
+	
+	<!-- 조회수 증가 -->
+	<update id="boardHit" parameterType="int">
+		<![CDATA[
+			update dramaboard set
+			dramaViewCnt = dramaViewCnt + 1
+			where dramaNo = #{dramaNo}
+		]]>
+	</update>
+</mapper>

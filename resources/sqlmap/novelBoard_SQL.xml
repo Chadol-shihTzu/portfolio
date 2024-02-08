@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE  mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="novelboard">
+	<!-- namespace에는 테이블명추가 -->
+	<!-- 게시물 리스트 -->
+	<select id="list" resultType="com.portfolio.jdh.domain.novelBoardVO">
+		<![CDATA[
+			select 
+			*
+			from
+			novelboard
+			order by novelNo desc 
+		]]>
+	</select>
+	
+	<!-- 게시물 작성 -->
+	<insert id="write" parameterType="hashMap" useGeneratedKeys="true" keyProperty="novelNo">
+		<![CDATA[
+			insert into novelboard
+			(novelTitle, novelShortTitle, novelContent, novelWriter)
+			values
+			(#{novelTitle}, #{novelShortTitle}, #{novelContent}, #{novelWriter})
+		]]>
+	</insert>
+	
+	<!-- 게시물 보기 -->
+	<select id="view" resultType="com.portfolio.jdh.domain.novelBoardVO">
+		<![CDATA[
+			select
+			novelNo, novelTitle, novelShortTitle, novelContent, novelWriter, novelregDate, novelViewCnt
+			from
+			novelboard
+			where novelNo = #{novelNo}
+		]]>
+	</select>
+	
+	<!-- 게시물 수정 -->
+	<update id="modify" parameterType="com.portfolio.jdh.domain.novelBoardVO">
+		<![CDATA[
+			update novelboard set
+			novelTitle = #{novelTitle},
+			novelShortTitle = #{novelShortTitle},
+			novelWriter = #{novelWriter},
+			novelContent = #{novelContent}
+			where novelNo = #{novelNo}
+		]]>		
+	</update>
+	
+	<!-- 게시물 삭제 -->
+	<delete id="delete" parameterType="int">
+		<![CDATA[
+			delete from novelboard where novelNo = #{novelNo}
+		]]>
+	</delete>
+	
+	<!-- ★페이징 -->
+	<!-- 1. 게시물 총 갯수 -->
+	<select id="count" resultType="int">
+		<![CDATA[
+			select count(novelNo) from novelboard
+		]]>
+	</select>
+	
+	<!-- 2. 게시물 목록 + 페이징 -->
+	<select id="listPage" parameterType="hashMap" resultType="com.portfolio.jdh.domain.novelBoardVO">
+		select novelNo, novelTitle, novelWriter, novelregDate, novelViewCnt
+		from novelboard
+		order by novelNo desc
+		limit #{displayPost}, #{postNum}
+	</select>
+	
+	<!-- 3. 게시물 목록 + 페이징 + 검색 -->
+	<select id="listPageSearch" parameterType="hashMap" resultType="com.portfolio.jdh.domain.novelBoardVO">
+		select novelNo, novelTitle, novelWriter, novelregDate, novelViewCnt
+		from novelboard
+		<if test='searchType.equals("title")'>
+			where novelTitle LIKE concat('%', #{keyword}, '%')
+		</if>
+		<if test='searchType.equals("content")'>
+		where novelContent LIKE concat('%', #{keyword}, '%')
+		</if>
+		<if test='searchType.equals("title_content")'>
+		where novelTitle LIKE concat('%', #{keyword}, '%') or novelContent LIKE concat('%', #{keyword}, '%')
+		</if>
+		<if test='searchType.equals("writer")'>
+		where novelWriter LIKE concat('%', #{keyword}, '%')
+		</if>
+		order by novelNo desc
+		limit #{displayPost}, #{postNum}
+	</select>
+	
+	<!-- 게시물 총 갯수 + 검색 적용 -->
+	<select id="searchCount" parameterType="hashMap" resultType="int">
+	 select count(novelNo) from novelboard  
+	  
+	 <if test='searchType.equals("title")'>
+	  WHERE novelTitle LIKE concat('%', #{keyword}, '%')
+	 </if>
+	 
+	 <if test='searchType.equals("content")'>
+	  WHERE novelContent LIKE concat('%', #{keyword}, '%')
+	 </if>
+	 
+	 <if test='searchType.equals("title_content")'>
+	  WHERE novelTitle LIKE concat('%', #{keyword}, '%') 
+	   or novelContent LIKE concat('%', #{keyword}, '%')
+	 </if>
+	 
+	 <if test='searchType.equals("writer")'>
+	  WHERE novelWriter LIKE concat('%', #{keyword}, '%')
+	 </if>
+	 
+	</select>
+	
+	<!-- 조회수 증가 -->
+	<update id="boardHit" parameterType="int">
+		<![CDATA[
+			update novelboard set
+			novelViewCnt = novelViewCnt + 1
+			where novelNo = #{novelNo}
+		]]>
+	</update>
+</mapper>

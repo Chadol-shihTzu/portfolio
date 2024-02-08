@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE  mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="poemboard">
+	<!-- namespace에는 테이블명추가 -->
+	<!-- 게시물 리스트 -->
+	<select id="list" resultType="com.portfolio.jdh.domain.poemBoardVO">
+		<![CDATA[
+			select 
+			*
+			from
+			poemboard
+			order by poemNo desc 
+		]]>
+	</select>
+	
+	<!-- 게시물 작성 -->
+	<insert id="write" parameterType="hashMap" useGeneratedKeys="true" keyProperty="poemNo">
+		<![CDATA[
+			insert into poemboard
+			(poemTitle, poemShortTitle, poemContent, poemWriter)
+			values
+			(#{poemTitle}, #{poemShortTitle}, #{poemContent}, #{poemWriter})
+		]]>
+	</insert>
+	
+	<!-- 게시물 보기 -->
+	<select id="view" resultType="com.portfolio.jdh.domain.poemBoardVO">
+		<![CDATA[
+			select
+			poemNo, poemTitle, poemShortTitle, poemContent, poemWriter, poemregDate, poemViewCnt
+			from
+			poemboard
+			where poemNo = #{poemNo}
+		]]>
+	</select>
+	
+	<!-- 게시물 수정 -->
+	<update id="modify" parameterType="com.portfolio.jdh.domain.poemBoardVO">
+		<![CDATA[
+			update poemboard set
+			poemTitle = #{poemTitle},
+			poemShortTitle = #{poemShortTitle},
+			poemWriter = #{poemWriter},
+			poemContent = #{poemContent}
+			where poemNo = #{poemNo}
+		]]>		
+	</update>
+	
+	<!-- 게시물 삭제 -->
+	<delete id="delete" parameterType="int">
+		<![CDATA[
+			delete from poemboard where poemNo = #{poemNo}
+		]]>
+	</delete>
+	
+	<!-- ★페이징 -->
+	<!-- 1. 게시물 총 갯수 -->
+	<select id="count" resultType="int">
+		<![CDATA[
+			select count(poemNo) from poemboard
+		]]>
+	</select>
+	
+	<!-- 2. 게시물 목록 + 페이징 -->
+	<select id="listPage" parameterType="hashMap" resultType="com.portfolio.jdh.domain.poemBoardVO">
+		select poemNo, poemTitle, poemWriter, poemregDate, poemViewCnt
+		from poemboard
+		order by poemNo desc
+		limit #{displayPost}, #{postNum}
+	</select>
+	
+	<!-- 3. 게시물 목록 + 페이징 + 검색 -->
+	<select id="listPageSearch" parameterType="hashMap" resultType="com.portfolio.jdh.domain.poemBoardVO">
+		select poemNo, poemTitle, poemWriter, poemregDate, poemViewCnt
+		from poemboard
+		<if test='searchType.equals("title")'>
+			where poemTitle LIKE concat('%', #{keyword}, '%')
+		</if>
+		<if test='searchType.equals("content")'>
+		where poemContent LIKE concat('%', #{keyword}, '%')
+		</if>
+		<if test='searchType.equals("title_content")'>
+		where poemTitle LIKE concat('%', #{keyword}, '%') or poemContent LIKE concat('%', #{keyword}, '%')
+		</if>
+		<if test='searchType.equals("writer")'>
+		where poemWriter LIKE concat('%', #{keyword}, '%')
+		</if>
+		order by poemNo desc
+		limit #{displayPost}, #{postNum}
+	</select>
+	
+	<!-- 게시물 총 갯수 + 검색 적용 -->
+	<select id="searchCount" parameterType="hashMap" resultType="int">
+	 select count(poemNo) from poemboard  
+	  
+	 <if test='searchType.equals("title")'>
+	  WHERE poemTitle LIKE concat('%', #{keyword}, '%')
+	 </if>
+	 
+	 <if test='searchType.equals("content")'>
+	  WHERE poemContent LIKE concat('%', #{keyword}, '%')
+	 </if>
+	 
+	 <if test='searchType.equals("title_content")'>
+	  WHERE poemTitle LIKE concat('%', #{keyword}, '%') 
+	   or poemContent LIKE concat('%', #{keyword}, '%')
+	 </if>
+	 
+	 <if test='searchType.equals("writer")'>
+	  WHERE poemWriter LIKE concat('%', #{keyword}, '%')
+	 </if>
+	 
+	</select>
+	
+	<!-- 조회수 증가 -->
+	<update id="boardHit" parameterType="int">
+		<![CDATA[
+			update poemboard set
+			poemViewCnt = poemViewCnt + 1
+			where poemNo = #{poemNo}
+		]]>
+	</update>
+</mapper>

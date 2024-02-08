@@ -1,0 +1,144 @@
+@charset "UTF-8";
+@font-face {
+    font-family: 'Arita-buri-Hairline';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_one@1.0/Arita-buri-Hairline.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+*{margin:0; padding:0; font-family: 'Arita-buri-Hairline';}
+a{text-decoration: none; }
+
+/* ckeditor */
+.ck-editor__editable{height:400px;}
+.ck-editor__editable p {margin: 0}
+.ck_content{font-size:13px;}
+
+/* 게시판 글내용 textarea폭 */
+.content_textarea{max-width:1256px;}
+
+.section_top_a_tag_gray{color:#6C757D !important;}
+.a_under_hov:hover{text-decoration:underline !important;}
+.align_bottom{vertical-align:bottom;}
+
+.boardAtag{color:black;}
+.boardAtag:hover{text-decoration:underline;}
+.more:hover{text-decoration: underline;}
+
+
+/* 관리자메뉴 비밀번호  eli */
+.password_eli{overflow: hidden;
+  text-overflow: ellipsis; max-width:200px !important;
+}
+
+
+/* 헤더 알림표시 */
+.fa-regular{font-size:22px;}
+.bell{line-height:40px;}
+
+/* 메인화면 카드 히든 */
+.o-hidden{
+overflow:hidden !important;
+}
+
+.h-50{height:147px !important;}
+.rank-new{
+	color:hotpink;
+}
+.standard-line {
+    position: relative;
+  }
+
+.section-table th .more-link {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+}
+#scrollToTopBtn {
+	display: none;
+	position: fixed;
+	bottom: 20px;
+	right: 235px;
+
+	color: white;
+	border: 1px solid #6C757D;
+	border-radius: 10px;
+	padding: 10px;
+	cursor: pointer;
+}
+
+/* clubmain 게시판 */
+.tabs-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tabs {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+        }
+
+        .tab {
+            cursor: pointer;
+            padding: 10px;
+            margin: 0 10px;
+            position: relative;
+        }
+
+        .tab::after {
+            content: "";
+            display: block;
+            width: 0;
+            height: 2px;
+            background-color: #007bff; /* 언더라인 색상 */
+            transition: width 0.3s;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+        }
+
+        .tab.active::after {
+            width: 100%;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+/* 메인페이지 모임 카드호버 */
+.card_mid:hover {
+	transform: translateY(-3px);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+ 	box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.card_mid:not(:hover) {
+    transform: translateY(0);
+    box-shadow: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* 마우스 아웃 시에도 트랜지션을 적용해 천천히 풀리도록 설정 */
+  }
+ 
+.club_hashtag{border-radius:16px; background-color:#F5F7F8;}
+
+/* 메인페이지 이벤트 카드호버 */
+.card_bottom{height:510px !important; position: relative!important; transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out; cursor:pointer;}
+.card_bottom:hover {box-shadow: 0 0 20px rgba(0, 0, 0, 0.4); transform: scale(1.02);}
+ 
+main {
+      max-width: 1296px;
+      margin: 20px auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+
+/* 댓글 수정 / 삭제버튼 호버 */
+.reply_modify_btn:hover{background-color:gray; color:white;}
+.reply_delete_btn:hover{background-color:gray; color:white;}

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE  mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="photoboard_reply">
+	<!-- namespace에는 테이블명추가 -->
+	<!-- 게시물 리스트 -->
+	<select id="replyList" parameterType="int" resultType="com.portfolio.jdh.domain.photoReplyVO">
+	<![CDATA[ 
+		select photoRno, photoNo, writer, content, regDate 
+		from photoboard_reply 
+		where photoNo = #{photoNo} 
+	]]>
+	</select>
+	
+	<!--  댓글 작성  -->
+	<insert id="replyWrite" parameterType="com.portfolio.jdh.domain.photoReplyVO">
+	<![CDATA[ 
+	insert into photoboard_reply(photoNo, writer, content) 
+	value(#{photoNo}, #{writer}, #{content}) 
+	]]>
+	</insert>
+	
+	<!--  댓글 수정  -->
+	<update id="replyModify" parameterType="com.portfolio.jdh.domain.photoReplyVO">
+	<![CDATA[ 
+	update photoboard_reply set writer = #{writer}, content = #{content} 
+	where photoRno = #{photoRno} and photoNo = #{photoNo} 
+	]]>
+	</update>
+	
+	<!--  댓글 삭제  -->
+	<delete id="replyDelete" parameterType="com.portfolio.jdh.domain.photoReplyVO">
+	<![CDATA[ 
+	delete from photoboard_reply 
+	where photoRno = #{photoRno} 
+	]]>
+	</delete>
+	
+	<!--  단일댓글조회  -->
+	<select id="replySelect" parameterType="com.portfolio.jdh.domain.photoReplyVO" resultType="com.portfolio.jdh.domain.photoReplyVO">
+	<![CDATA[ 
+	select photoRno, photoNo, writer, content, regDate 
+	from photoboard_reply 
+	where photoNo=#{photoNo} and photoRno= #{photoRno} 
+	]]>
+	</select>
+</mapper>
